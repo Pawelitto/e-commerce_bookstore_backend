@@ -1,6 +1,6 @@
 from import_export.admin import ImportExportModelAdmin
 from django.contrib import admin
-from .models import books
+from .models import Books
 
 
 # Register your models here.
@@ -8,6 +8,6 @@ from .models import books
 class booksAdmin(ImportExportModelAdmin, admin.ModelAdmin):
     ...
 
-admin.site.register(books, booksAdmin)
+admin.site.register(Books, booksAdmin)
 
 
