@@ -12,29 +12,16 @@ from random import sample
 
 
 
-class BookListAV(ListCreateAPIView):
-    queryset = Books.objects.all()
-    serializer_class = BookListSerializer
-    pagination_class = CustomPagination
-
-
 class BookList(APIView):
+    def get(self, request):
+        books = Books.objects.all()
+        page_number = self.request.query_params.get('page_number', 1)
+        page_size = self.request.query_params.get('page_size', 3)
 
-    def get(self, request, format=None):
-        books = BookList.objects.all()
-        serializer = BookListSerializer(books, many=True)
-        
+        paginator = Paginator(books , page_size)
+        serializer = BookListSerializer(paginator.page(page_number), many=True)
+
         return Response(serializer.data, status=status.HTTP_200_OK)
-
-    # def get(self, request):
-    #     books = BookList.objects.all()
-    #     page_number = self.request.query_params.get('page_number ', 1)
-    #     page_size = self.request.query_params.get('page_size ', 10)
-
-    #     paginator = Paginator(books , page_size)
-    #     serializer = BookListSerializer(paginator.page(page_number), many=True)
-
-    #     return Response(serializer.data, status=status.HTTP_200_OK)
         
     def post(self, request, format=None):
         serializer = BookListSerializer(data=request.data)
@@ -44,6 +31,29 @@ class BookList(APIView):
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
+class BookDetail(APIView):
+    def get(self, request, pk, format=None):
+        try:
+            book = Books.objects.get(pk=pk)
+        except Books.DoesNotExist:
+            return Response({'Error': 'Book not found'},status=status.HTTP_404_NOT_FOUND)
+        
+        serializer = BookListSerializer(book)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    def put(self, request, pk, format=None):
+        try:
+            book = Books.objects.get(pk=pk)
+        except Books.DoesNotExist:
+            return Response({'Error': 'Book not found'},status=status.HTTP_404_NOT)
+        
+        serializer = BookListSerializer(book, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+            
     
         
