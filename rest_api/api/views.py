@@ -1,11 +1,11 @@
 from rest_api.api.serializers import BookListSerializer
-from rest_framework.generics import ListCreateAPIView
+from rest_api.api.serializers import BookSearchSerializer
 from rest_framework.response import Response
 from django.core.paginator import Paginator
 from rest_framework.views import APIView
 from .pagination import CustomPagination
 from django.http import HttpResponse
-from rest_framework import viewsets
+from rest_framework import viewsets, generics
 from rest_api.models import Books
 from rest_framework import status
 from random import sample
@@ -55,5 +55,11 @@ class BookDetail(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
             
-    
+class BookSearch(APIView):
+    def get(self, request, format=None):
+        query = self.request.query_params.get('query', None)
+        books = Books.objects.filter(title__icontains=query)
+        serializer = BookListSerializer(books, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+        
         

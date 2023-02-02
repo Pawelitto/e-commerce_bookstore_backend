@@ -7,7 +7,7 @@ class BookListSerializer(serializers.ModelSerializer):
         model = Books
         fields = '__all__'
 
-class BookCreateSerializer(serializers.ModelSerializer):
+class BookSearchSerializer(serializers.ModelSerializer):
     class Meta:
         model = Books
         fields = '__all__'
